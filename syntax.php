@@ -71,7 +71,7 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= $renderer->fields[$field_name];
                 return true;
             } elseif ($format == 'odt') {
-                $renderer->_odtInsertUserField($field_name);
+                $renderer->doc .= $this->_fieldsODTInsertUserField($renderer, $field_name);
                 return true;
             }
         } else {
@@ -83,11 +83,29 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
                 $renderer->fields[$field_name] = $field_value;
                 return true;
             } elseif ($format == 'odt') {
-                $renderer->_odtAddUserField($field_name, $field_value);
+                $this->_fieldsODTAddUserField($renderer, $field_name, $field_value);
                 return true;
             }
         }
         return false;
+    }
+
+    function _fieldsODTFilterUserFieldName($name) {
+        // keep only allowed chars in the name
+        return preg_replace('/[^a-zA-Z0-9_.]/', '', $name);
+    }
+
+    function _fieldsODTAddUserField(&$renderer, $name, $value) {
+        $name = $this->_fieldsODTFilterUserFieldName($name);
+        $renderer->fields[$name] = $value;
+    }
+
+    function _fieldsODTInsertUserField(&$renderer, $name) {
+        $name = $this->_fieldsODTFilterUserFieldName($name);
+        if (array_key_exists($name, $renderer->fields)) {
+            return '<text:user-field-get text:name="'.$name.'">'.$renderer->fields[$name].'</text:user-field-get>';
+        }
+        return '';
     }
 
 }
