@@ -80,10 +80,11 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
                 if (!isset($renderer->fields)) {
                     $renderer->fields = array();
                 }
-                $renderer->fields[$field_name] = $field_value;
+                $renderer->fields[$field_name] = htmlentities($field_value);
                 return true;
             } elseif ($format == 'odt') {
-                $this->_fieldsODTAddUserField($renderer, $field_name, $field_value);
+                $this->_fieldsODTAddUserField($renderer, $field_name,
+                            $renderer->_xmlEntities($field_value));
                 return true;
             }
         }
@@ -110,4 +111,4 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
 
 }
 
-//Setup VIM: ex: et ts=4 enc=utf-8 :
+//Setup VIM: ex: et ts=4 fileencoding=utf-8 :
