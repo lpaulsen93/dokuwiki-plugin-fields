@@ -97,14 +97,22 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
     }
 
     function _fieldsODTAddUserField(&$renderer, $name, $value) {
-        $name = $this->_fieldsODTFilterUserFieldName($name);
-        $renderer->fields[$name] = $value;
+        if (!method_exists ($renderer, 'addUserField')) {
+            $name = $this->_fieldsODTFilterUserFieldName($name);
+            $renderer->fields[$name] = $value;
+        } else {
+            $renderer->addUserField($name, $value);
+        }
     }
 
     function _fieldsODTInsertUserField(&$renderer, $name) {
-        $name = $this->_fieldsODTFilterUserFieldName($name);
-        if (array_key_exists($name, $renderer->fields)) {
-            return '<text:user-field-get text:name="'.$name.'">'.$renderer->fields[$name].'</text:user-field-get>';
+        if (!method_exists ($renderer, 'insertUserField')) {
+            $name = $this->_fieldsODTFilterUserFieldName($name);
+            if (array_key_exists($name, $renderer->fields)) {
+                return '<text:user-field-get text:name="'.$name.'">'.$renderer->fields[$name].'</text:user-field-get>';
+            }
+        } else {
+            $renderer->insertUserField($name);
         }
         return '';
     }
