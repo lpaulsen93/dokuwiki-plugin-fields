@@ -3,7 +3,7 @@
  * Fields Plugin: Re-usable user fields
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * @author     Aurelien Bompard <aurelien@bompard.org>
+ * @author     Aurelien Bompard <aurelien@bompard.org>, LarsDW223
  */
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
@@ -12,13 +12,6 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 require_once(DOKU_PLUGIN.'syntax.php');
 
 class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
-
-    /**
-     * return some info
-     */
-    function getInfo(){
-        return confToHash(dirname(__FILE__).'/info.txt');
-    }
 
     /**
      * What kind of syntax are we?
@@ -45,7 +38,7 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, &$handler){
+    public function handle($match, $state, $pos, Doku_Handler $handler) {
         $match = substr($match,9,-2); //strip markup
         $extinfo = explode('=',$match);
         $field_name = $extinfo[0];
@@ -62,7 +55,7 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($format, &$renderer, $data) {
+    public function render($format, Doku_Renderer $renderer, $data) {
         global $ID;
         list($field_name, $field_value) = $data;
         if ($field_value == '') { // no value -> get the field

@@ -1,0 +1,7 @@
+base   fields
+author Aurelien Bompard, LarsDW223
+email  aurelien@bompard.org
+date   2016-09-14
+name   Fields Plugin
+desc   Store and recall user-defined fields
+url    https://www.dokuwiki.org/plugin:fields
