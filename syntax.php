@@ -44,7 +44,7 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
         $field_name = $extinfo[0];
         if (count($extinfo) < 2) { // no value
             $field_value = '';
-        } elseif (count($field) == 2) {
+        } elseif (count($extinfo) == 2) {
             $field_value = $extinfo[1];
         } else { // value may contain equal signs
             $field_value = implode(array_slice($extinfo,1), '=');
