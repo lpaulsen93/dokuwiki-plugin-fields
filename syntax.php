@@ -12,6 +12,12 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 require_once(DOKU_PLUGIN.'syntax.php');
 
 class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
+    /**
+     * Constructor. Loads helper plugin.
+     */
+    public function __construct() {
+        $this->helper = $this->loadHelper('fields');
+    }
 
     /**
      * What kind of syntax are we?
@@ -64,7 +70,7 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= $renderer->fields[$field_name];
                 return true;
             } elseif ($format == 'odt') {
-                $renderer->doc .= $this->_fieldsODTInsertUserField($renderer, $field_name);
+                $renderer->doc .= $this->helper->ODTDisplayUserField($renderer, $field_name);
                 return true;
             }
         } else {
@@ -76,8 +82,8 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
                 $renderer->fields[$field_name] = htmlentities($field_value);
                 return true;
             } elseif ($format == 'odt') {
-                $this->_fieldsODTAddUserField($renderer, $field_name,
-                            $renderer->_xmlEntities($field_value));
+                $this->helper->ODTSetUserField($renderer, $field_name,
+                    $renderer->_xmlEntities($field_value));
                 return true;
             }
         }
@@ -88,28 +94,6 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
         // keep only allowed chars in the name
         return preg_replace('/[^a-zA-Z0-9_.]/', '', $name);
     }
-
-    function _fieldsODTAddUserField(&$renderer, $name, $value) {
-        if (!method_exists ($renderer, 'addUserField')) {
-            $name = $this->_fieldsODTFilterUserFieldName($name);
-            $renderer->fields[$name] = $value;
-        } else {
-            $renderer->addUserField($name, $value);
-        }
-    }
-
-    function _fieldsODTInsertUserField(&$renderer, $name) {
-        if (!method_exists ($renderer, 'insertUserField')) {
-            $name = $this->_fieldsODTFilterUserFieldName($name);
-            if (array_key_exists($name, $renderer->fields)) {
-                return '<text:user-field-get text:name="'.$name.'">'.$renderer->fields[$name].'</text:user-field-get>';
-            }
-        } else {
-            $renderer->insertUserField($name);
-        }
-        return '';
-    }
-
 }
 
 //Setup VIM: ex: et ts=4 fileencoding=utf-8 :
