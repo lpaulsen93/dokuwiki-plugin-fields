@@ -16,7 +16,8 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
      * Constructor. Loads helper plugin.
      */
     public function __construct() {
-        $this->helper = $this->loadHelper('fields');
+        $this->fields_helper = plugin_load('helper','fields');
+        $this->usecounter_helper = plugin_load('helper','usecounter');
     }
 
     /**
@@ -70,7 +71,7 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= $renderer->fields[$field_name];
                 return true;
             } elseif ($format == 'odt') {
-                $renderer->doc .= $this->helper->ODTDisplayUserField($renderer, $field_name);
+                $renderer->doc .= $this->fields_helper->ODTDisplayUserField($renderer, $field_name);
                 return true;
             }
         } else {
@@ -82,8 +83,17 @@ class syntax_plugin_fields extends DokuWiki_Syntax_Plugin {
                 $renderer->fields[$field_name] = htmlentities($field_value);
                 return true;
             } elseif ($format == 'odt') {
-                $this->helper->ODTSetUserField($renderer, $field_name,
-                    $renderer->_xmlEntities($field_value));
+                if ($this->getConf('firstfielddefinitionwins')) {
+                    if ($this->usecounter_helper && $this->usecounter_helper->amountOfUses('fields_'.$field_name) == 0) {
+                        $this->fields_helper->ODTSetUserField($renderer, $field_name, $renderer->_xmlEntities($field_value));
+                    }
+                    
+                    if ($this->usecounter_helper) {
+                        $this->usecounter_helper->incUsageOf('fields_'.$field_name);
+                    }
+                } else {
+                    $this->fields_helper->ODTSetUserField($renderer, $field_name, $renderer->_xmlEntities($field_value));
+                }
                 return true;
             }
         }
